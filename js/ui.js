@@ -1,48 +1,23 @@
+import { APP } from "./config.js";
+import { NAVIGATION } from "./navigation.js";
+
 export function initUI() {
 
-    renderHeader();
-    renderDashboard();
+    renderHeader(APP.name);
+
     renderTabbar();
 
 }
 
-export function renderDashboard() {
-
-    const content = document.getElementById("content");
-
-    content.innerHTML = `
-
-        <div class="card">
-
-            <div class="title">
-                Willkommen 👋
-            </div>
-
-            <p>
-                TrainingsApp Version 1.0
-            </p>
-
-            <br>
-
-            <p>
-                Das Dashboard wird in den nächsten Sprints erweitert.
-            </p>
-
-        </div>
-
-    `;
-
-}
-
-function renderHeader() {
+export function setHeader(title) {
 
     document.getElementById("app-header").innerHTML = `
 
-        <h1>TrainingsApp</h1>
+        <h1>${title}</h1>
 
         <p class="subtitle">
 
-            Dein persönlicher Trainingsbegleiter
+            ${APP.name}
 
         </p>
 
@@ -50,30 +25,32 @@ function renderHeader() {
 
 }
 
+function renderHeader(title) {
+
+    setHeader(title);
+
+}
+
 function renderTabbar() {
 
-    document.getElementById("tabbar").innerHTML = `
+    const html = Object.values(NAVIGATION).map((view, index) => `
 
-        <button class="tab-button active" data-view="dashboard">
-            Dashboard
+        <button
+            class="tab-button ${index === 0 ? "active" : ""}"
+            data-view="${view.id}">
+
+            <span class="tab-icon">
+                ${view.icon}
+            </span>
+
+            <span class="tab-label">
+                ${view.title}
+            </span>
+
         </button>
 
-        <button class="tab-button" data-view="training">
-            Training
-        </button>
+    `).join("");
 
-        <button class="tab-button" data-view="timer">
-            Timer
-        </button>
-
-        <button class="tab-button" data-view="statistics">
-            Statistik
-        </button>
-
-        <button class="tab-button" data-view="settings">
-            Einstellungen
-        </button>
-
-    `;
+    document.getElementById("tabbar").innerHTML = html;
 
 }

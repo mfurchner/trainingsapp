@@ -55,3 +55,112 @@
     font-weight:600;
 
 }
+
+.tab-button{
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+    align-items:center;
+
+    gap:4px;
+
+}
+
+.tab-icon{
+
+    font-size:1.2rem;
+
+}
+
+.tab-label{
+
+    font-size:.70rem;
+
+}
+
+.training-day {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.training-day:last-child {
+    border-bottom: none;
+}
+
+.rest-day {
+    opacity: .65;
+}
+
+.exercise-list {
+    margin: 12px 0 0;
+    padding-left: 20px;
+}
+
+.exercise-list li {
+    margin-bottom: 12px;
+}
+
+.exercise-list li:last-child {
+    margin-bottom: 0;
+}
+
+.accordion-toggle {
+
+    width: 100%;
+    border: none;
+    background: transparent;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    cursor: pointer;
+
+    padding: 0;
+    margin: 0;
+
+    text-align: left;
+}
+
+.accordion-content {
+
+    display: none;
+
+    margin-top: 16px;
+}
+
+.accordion-content.open {
+
+    display: block;
+}
+
+.accordion-icon {
+
+    font-size: 18px;
+
+    transition: transform .25s ease;
+}
+
+.accordion-icon.open {
+
+    transform: rotate(90deg);
+}
+
+.primary-button {
+
+    margin-top: 20px;
+
+    width: 100%;
+
+    padding: 12px;
+
+    border-radius: 12px;
+
+    border: none;
+
+    cursor: pointer;
+}
