@@ -1,0 +1,1 @@
+if('serviceWorker'in navigator){navigator.serviceWorker.register('service-worker.js')}let d;window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();d=e;let b=document.getElementById('installBtn');b.hidden=false;b.onclick=()=>d.prompt()});
