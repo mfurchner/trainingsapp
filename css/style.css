@@ -2,7 +2,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#f2f2f7;
 header{background:#fff;padding:20px;text-align:center;box-shadow:0 1px 5px rgba(0,0,0,.1)}
 main{max-width:700px;margin:auto;padding:16px}
 .card{background:#fff;border-radius:18px;padding:18px;margin:18px 0;box-shadow:0 2px 10px rgba(0,0,0,.08)}
-#display{font-size:54px;font-weight:700;text-align:center;margin:20px 0}
+#display{font-size:50px;font-weight:700;text-align:center;margin:20px 0}
 .buttons{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
 button{padding:12px 18px;border:none;border-radius:12px;background:#007aff;color:#fff;font-size:16px}
 button:nth-child(2){background:#ff9500}
