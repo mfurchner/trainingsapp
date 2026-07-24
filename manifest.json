@@ -1,1 +1,22 @@
-{"name":"Trainings-App","short_name":"Training","display":"standalone","start_url":"./","theme_color":"#007aff","background_color":"#f2f2f7"}
+{
+  "name": "TrainingsApp",
+  "short_name": "Training",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#F2F2F7",
+  "theme_color": "#0A84FF",
+  "orientation": "portrait",
+  "lang": "de-DE",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
