@@ -1,0 +1,54 @@
+:root {
+
+    /* Farben */
+    --color-primary: #0A84FF;
+    --color-primary-dark: #0066CC;
+
+    --color-background: #F2F2F7;
+    --color-surface: #FFFFFF;
+
+    --color-text: #1C1C1E;
+    --color-text-secondary: #6E6E73;
+
+    --color-border: #D1D1D6;
+
+    --color-success: #34C759;
+    --color-warning: #FF9F0A;
+    --color-danger: #FF3B30;
+
+    /* Schatten */
+
+    --shadow-small: 0 2px 8px rgba(0,0,0,.08);
+    --shadow-medium: 0 6px 20px rgba(0,0,0,.12);
+
+    /* Rundungen */
+
+    --radius-small: 10px;
+    --radius-medium: 16px;
+    --radius-large: 24px;
+
+    /* Abstände */
+
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 24px;
+    --space-xl: 32px;
+
+    /* Schrift */
+
+    --font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Helvetica,
+        Arial,
+        sans-serif;
+
+    --font-small: .85rem;
+    --font-normal: 1rem;
+    --font-large: 1.25rem;
+    --font-title: 1.8rem;
+
+}
