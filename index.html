@@ -1,29 +1,30 @@
 <!doctype html><html lang="de"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Trainings-App v0.3</title>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Trainings-App v0.4</title>
 <link rel="manifest" href="manifest.json">
 <link rel="stylesheet" href="css/style.css">
 </head><body>
-<header><h1>🏋️ Trainings-App <small>v0.3</small></h1></header>
+<header><h1>🏋️ Trainings-App</h1><span class="badge">v0.4</span></header>
 <main>
-<div class="card">
+<section class="card hero">
 <h2>Heute</h2>
-<p>Woche 1 – Training A</p>
-<div id="display">00:45</div>
+<p>Woche 1 · Training A</p>
+<div class="progress"><div id="ring">00:45</div></div>
 <div class="buttons">
-<button id="start">▶ Start</button>
-<button id="pause">⏸ Pause</button>
+<button id="start">▶︎ Start</button>
+<button id="pause">⏸︎ Pause</button>
 <button id="reset">↺ Reset</button>
 </div>
-</div>
+</section>
 
-<div class="card">
-<h2>Übungen</h2>
-<details><summary>Kniebeugen</summary><p>3×12 Wiederholungen.</p></details>
-<details><summary>Ausfallschritte</summary><p>3×10 je Seite.</p></details>
-<details><summary>Plank</summary><p>3×30 Sekunden.</p></details>
+<section class="card">
+<h2>Trainingsplan</h2>
+<details open><summary>Kniebeugen</summary><p>3×12 Wiederholungen</p></details>
+<details><summary>Ausfallschritte</summary><p>3×10 je Seite</p></details>
+<details><summary>Glute Bridge</summary><p>3×15 Wiederholungen</p></details>
+<details><summary>Plank</summary><p>3×30 Sekunden</p></details>
 <p><label><input id="done" type="checkbox"> Training abgeschlossen</label></p>
-</div>
+</section>
 </main>
 <script src="js/app.js"></script>
 </body></html>

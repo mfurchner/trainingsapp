@@ -1,1 +1,1 @@
-Version 0.3 mit Start/Pause/Reset-Timer.
+v0.4
