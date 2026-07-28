@@ -33,7 +33,9 @@ function renderHeader(title) {
 
 function renderTabbar() {
 
-    const html = Object.values(NAVIGATION).map((view, index) => `
+    const html = Object.values(NAVIGATION)
+    .filter(view => view.showInTabbar)
+    .map((view, index) => `
 
         <button
             class="tab-button ${index === 0 ? "active" : ""}"

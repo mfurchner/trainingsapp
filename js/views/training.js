@@ -1,15 +1,19 @@
-import { TRAINING_PLAN } from "../data/training-plan.js";
+import { loadTrainingPlan } from "../training-storage.js";
 import { WORKOUTS } from "../data/workouts.js";
 import { EXERCISES } from "../data/exercises.js";
+import { startSession } from "../session.js";
+import { showView } from "../router.js";
 
 export function trainingView() {
+
+    const trainingPlan = loadTrainingPlan();
 
     let html = `
         <div class="page">
             <h2>4-Wochen-Trainingsplan</h2>
     `;
 
-    TRAINING_PLAN.forEach(week => {
+    trainingPlan.forEach(week => {
 
         html += `
             <section class="card">
@@ -41,11 +45,14 @@ export function trainingView() {
                     >
                         <div>
 
-                            <strong>${day.weekday}</strong><br>
+                        <strong>
+                            ${day.weekday}
+                            ${day.completed ? " ✅" : ""}
+                        </strong><br>
 
-                            🏋️ ${workout.name}<br>
+                        🏋️ ${workout.name}<br>
 
-                            <small>${workout.description}</small>
+                        <small>${workout.description}</small>
 
                         </div>
 
@@ -77,7 +84,11 @@ export function trainingView() {
             html += `
                 </ul>
 
-                <button class="primary-button">
+                <button
+                    class="primary-button start-workout"
+                    data-week="${week.week}"
+                    data-day="${day.day}"
+                    data-workout="${day.workout}">
                     Training starten
                 </button>
 
@@ -112,7 +123,7 @@ export function initTrainingView() {
             const id = button.dataset.workout;
 
             const content = document.getElementById(`workout-${id}`);
-
+            
             const icon = button.querySelector(".accordion-icon");
 
             const isOpen = content.classList.contains("open");
@@ -135,5 +146,21 @@ export function initTrainingView() {
         });
 
     });
+
+    document.querySelectorAll(".start-workout").forEach(button => {
+
+    button.addEventListener("click", () => {
+
+        startSession(
+            Number(button.dataset.week),
+            Number(button.dataset.day),
+            button.dataset.workout
+        );
+
+        showView("trainingSession");
+
+    });
+
+});
 
 }

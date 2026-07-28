@@ -1,6 +1,8 @@
 import { NAVIGATION } from "./navigation.js";
 import { setHeader } from "./ui.js";
 import { initTrainingView } from "./views/training.js";
+import { initTrainingSessionView } from "./views/training-session.js";
+import { initTrainingFinishedView } from "./views/training-finished.js";
 
 export function initRouter() {
 
@@ -34,7 +36,7 @@ function setActiveButton(activeButton) {
 
 }
 
-function showView(viewId) {
+export function showView(viewId) {
 
     const view = NAVIGATION[viewId];
 
@@ -46,7 +48,38 @@ function showView(viewId) {
 
     setHeader(view.title);
 
-    if (view.id === "training") {
+    const header = document.getElementById("app-header");
+    const tabbar = document.getElementById("tabbar");
+
+    if (
+        viewId === "trainingSession" ||
+        viewId === "trainingFinished"
+    ) {
+
+        header.style.display = "none";
+        tabbar.style.display = "none";
+
+    } else {
+
+        header.style.display = "";
+        tabbar.style.display = "";
+
+    }
+
+    if (viewId === "trainingSession") {
+        initTrainingSessionView();
+    }
+
+    if (viewId === "trainingFinished") {
+        initTrainingFinishedView();
+    }
+
+    if (viewId === "training") {
         initTrainingView();
     }
+
+    if (viewId === "trainingFinished") {
+        initTrainingFinishedView();
+    }
+
 }
