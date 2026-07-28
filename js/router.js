@@ -3,6 +3,7 @@ import { setHeader } from "./ui.js";
 import { initTrainingView } from "./views/training.js";
 import { initTrainingSessionView } from "./views/training-session.js";
 import { initTrainingFinishedView } from "./views/training-finished.js";
+import { initTimerView } from "./views/timer.js";
 
 export function initRouter() {
 
@@ -82,4 +83,7 @@ export function showView(viewId) {
         initTrainingFinishedView();
     }
 
+    if (viewId === "timer") {
+        initTimerView();
+    }
 }

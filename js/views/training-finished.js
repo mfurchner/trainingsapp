@@ -1,7 +1,25 @@
-import { clearSession } from "../session.js";
+import { getSession, clearSession } from "../session.js";
 import { showView } from "../router.js";
 
 export function trainingFinishedView() {
+
+    const session = getSession();
+
+    let duration = "--:--";
+
+    if (session?.startedAt) {
+
+        const durationMs = Date.now() - session.startedAt.getTime();
+
+        const totalSeconds = Math.floor(durationMs / 1000);
+
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = totalSeconds % 60;
+
+        duration =
+            `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+
+    }
 
     return `
         <div class="page">
@@ -12,6 +30,11 @@ export function trainingFinishedView() {
 
                 <p>
                     Super gemacht!
+                </p>
+
+                <p class="training-duration">
+                    ⏱ Trainingsdauer<br>
+                    <strong>${duration}</strong>
                 </p>
 
                 <button

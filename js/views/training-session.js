@@ -3,6 +3,7 @@ import { EXERCISES } from "../data/exercises.js";
 import { showView } from "../router.js";
 import { getSession, nextSet, nextExercise } from "../session.js";
 import { completeWorkout } from "../training-storage.js";
+import { addHistoryEntry } from "../history-storage.js";
 
 export function trainingSessionView() {
 
@@ -80,11 +81,13 @@ export function trainingSessionView() {
 
                 <button class="primary-button" id="next-set-button">
                     ${
-                        session.set < currentExercise.sets
-                            ? "Satz abgeschlossen"
-                            : session.exerciseIndex < workout.exercises.length - 1
-                                ? "Satz abgeschlossen → Weiter zur nächsten Übung"
-                                : "Training abschließen 🎉"
+                        currentExercise.duration && session.status === "exercise"
+                            ? "▶ Timer starten"
+                            : session.set < currentExercise.sets
+                                ? "Satz abgeschlossen"
+                                : session.exerciseIndex < workout.exercises.length - 1
+                                    ? "Satz abgeschlossen → Weiter zur nächsten Übung"
+                                    : "Training abschließen 🎉"
                     }
                 </button>
 
@@ -119,6 +122,25 @@ export function initTrainingSessionView() {
             nextExercise();
 
         } else {
+
+            const duration = Math.floor(
+                (Date.now() - session.startedAt.getTime()) / 1000
+            );
+
+            addHistoryEntry({
+
+                workoutId: session.workoutId,
+
+                week: session.week,
+                day: session.day,
+
+                startedAt: session.startedAt,
+
+                finishedAt: new Date(),
+
+                duration
+
+            });
 
             completeWorkout(session.week, session.day);
 

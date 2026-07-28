@@ -52,6 +52,7 @@ export const NAVIGATION = {
         id: "statistics",
         title: "Statistik",
         icon: "📊",
+        showInTabbar: true,
         render: statisticsView
     },
 
