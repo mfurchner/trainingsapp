@@ -15,9 +15,22 @@ import { addHistoryEntry } from "../history-storage.js";
 
 import {
     startTimer,
-    stopTimer
+    stopTimer,
+    getRemainingSeconds
 } from "../timer.js";
 
+
+const STATUS = {
+
+    EXERCISE: "exercise",
+
+    TIMER: "timer",
+
+    REST: "rest",
+
+    FINISHED: "finished"
+
+};
 
 export function trainingSessionView() {
 
@@ -80,37 +93,62 @@ export function trainingSessionView() {
     );
 
 
-
     /*
-     * --------------------------------------------------------
-     * Buttonzustand bestimmen
-     * --------------------------------------------------------
-     */
+    * --------------------------------------------------------
+    * Buttonzustand bestimmen
+    * --------------------------------------------------------
+    */
 
     let buttonText = "";
     let buttonDisabled = false;
 
-    if (currentExercise.duration) {
+    let exerciseInfo =
+        currentExercise.reps
+            ? `${currentExercise.reps} Wiederholungen`
+            : `${currentExercise.duration} Sekunden`;
+
+    if (getStatus() === STATUS.REST) {
+
+        exerciseInfo = `
+            <div class="timer-display">
+                ${getRemainingSeconds()}
+            </div>
+        `;
+
+        buttonText = "▶ Weiter trainieren";
+        buttonDisabled = false;
+
+    }
+    else if (currentExercise.duration) {
 
         switch (getStatus()) {
 
-            case "exercise":
+            case STATUS.EXERCISE:
 
                 buttonText = "▶ Timer starten";
-
                 break;
 
-            case "timer":
+            case STATUS.TIMER:
+
+                exerciseInfo = `
+                    <div class="timer-display">
+                        ${getRemainingSeconds()}
+                    </div>
+                `;
 
                 buttonText = "⏱ Timer läuft...";
                 buttonDisabled = true;
-
                 break;
 
-            case "finished":
+            case STATUS.FINISHED:
+
+                exerciseInfo = `
+                    <div class="timer-display">
+                        0
+                    </div>
+                `;
 
                 buttonText = "✔ Satz abschließen";
-
                 break;
 
             default:
@@ -119,7 +157,8 @@ export function trainingSessionView() {
 
         }
 
-    } else {
+    }
+    else {
 
         if (session.set < currentExercise.sets) {
 
@@ -177,19 +216,12 @@ export function trainingSessionView() {
 
                 </p>
 
-                <p>
+                <div class="exercise-info">
 
-                    ${
+                    ${exerciseInfo}
 
-                        currentExercise.reps
+                </div>
 
-                            ? `${currentExercise.reps} Wiederholungen`
-
-                            : `${currentExercise.duration} Sekunden`
-
-                    }
-
-                </p>
 
                 <button
                     class="primary-button"
@@ -225,7 +257,7 @@ export function initTrainingSessionView() {
 function handleButtonClick() {
 
     const session = getSession();
-
+ 
     if (!session) {
         return;
     }
@@ -236,7 +268,13 @@ function handleButtonClick() {
         workout.exercises[session.exerciseIndex];
 
 
+        if (getStatus() === STATUS.REST) {
 
+            completeRest();
+
+            return;
+
+        }    
     /*
      * --------------------------------------------------
      * Zeitübung
@@ -247,17 +285,17 @@ function handleButtonClick() {
 
         switch (getStatus()) {
 
-            case "exercise":
+            case STATUS.EXERCISE:
 
                 startExerciseTimer(currentExercise.duration);
 
                 return;
 
-            case "timer":
+            case STATUS.TIMER:
 
                 return;
 
-            case "finished":
+            case STATUS.FINISHED:
 
                 completeCurrentSet();
 
@@ -283,7 +321,7 @@ function handleButtonClick() {
 
 function startExerciseTimer(seconds) {
 
-    setStatus("timer");
+    setStatus(STATUS.TIMER);
 
     showView("trainingSession");
 
@@ -293,15 +331,43 @@ function startExerciseTimer(seconds) {
 
         () => {
 
-            // Countdown-Anzeige folgt im nächsten Sprint
+            showView("trainingSession");
 
         },
 
         () => {
 
-            setStatus("finished");
+            setStatus(STATUS.FINISHED);
 
             showView("trainingSession");
+
+        }
+
+    );
+
+}
+
+
+
+function startRestTimer(seconds) {
+
+    setStatus(STATUS.REST);
+
+    showView("trainingSession");
+
+    startTimer(
+
+        seconds,
+
+        () => {
+
+            showView("trainingSession");
+
+        },
+
+        () => {
+
+            completeRest();
 
         }
 
@@ -315,7 +381,7 @@ function completeCurrentSet() {
 
     stopTimer();
 
-    setStatus("exercise");
+    setStatus(STATUS.EXERCISE);
 
     const session = getSession();
 
@@ -328,6 +394,14 @@ function completeCurrentSet() {
 
     if (session.set < currentExercise.sets) {
 
+        if (currentExercise.rest) {
+
+            startRestTimer(currentExercise.rest);
+
+            return;
+
+        }
+
         nextSet();
 
         showView("trainingSession");
@@ -335,8 +409,6 @@ function completeCurrentSet() {
         return;
 
     }
-
-
 
     if (
         session.exerciseIndex <
@@ -350,8 +422,6 @@ function completeCurrentSet() {
         return;
 
     }
-
-
 
     finishTraining();
 
@@ -398,5 +468,17 @@ function finishTraining() {
 
 
     showView("trainingFinished");
+
+}
+
+function completeRest() {
+
+    stopTimer();
+
+    nextSet();
+
+    setStatus(STATUS.EXERCISE);
+
+    showView("trainingSession");
 
 }

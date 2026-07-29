@@ -202,3 +202,29 @@
     margin-bottom: 20px;
 
 }
+
+.timer-display {
+
+    font-size: 5rem;
+
+    font-weight: 700;
+
+    text-align: center;
+
+    margin: 24px 0;
+
+    line-height: 1;
+
+    font-variant-numeric: tabular-nums;
+
+}
+
+.exercise-info {
+
+    text-align: center;
+
+    margin: 20px 0;
+
+    font-size: 1.2rem;
+
+}
