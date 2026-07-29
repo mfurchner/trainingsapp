@@ -112,7 +112,7 @@ export function trainingView() {
     return html;
 }
 
-export function initTrainingView() {
+export async function initTrainingView() {
 
     const buttons = document.querySelectorAll(".accordion-toggle");
 
@@ -149,13 +149,15 @@ export function initTrainingView() {
 
     document.querySelectorAll(".start-workout").forEach(button => {
 
-    button.addEventListener("click", () => {
+    button.addEventListener("click", async() => {
 
         startSession(
             Number(button.dataset.week),
             Number(button.dataset.day),
             button.dataset.workout
         );
+
+        requestWakeLock();
 
         showView("trainingSession");
 

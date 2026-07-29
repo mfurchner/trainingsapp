@@ -19,6 +19,10 @@ import {
     getRemainingSeconds
 } from "../timer.js";
 
+import {
+    requestWakeLock,
+    releaseWakeLock
+} from "../wake-lock.js";
 
 const STATUS = {
 
@@ -429,7 +433,7 @@ function completeCurrentSet() {
 
 
 
-function finishTraining() {
+async function finishTraining() {
 
     const session = getSession();
 
@@ -465,7 +469,7 @@ function finishTraining() {
 
     );
 
-
+    releaseWakeLock();
 
     showView("trainingFinished");
 
