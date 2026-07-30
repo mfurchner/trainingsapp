@@ -4,11 +4,19 @@ export function prepareFeedback() {
 
     const context = getAudioContext();
 
-    if (!context || context.state !== "suspended") {
+    if (
+        !context ||
+        context.state === "closed" ||
+        context.state === "running"
+    ) {
         return;
     }
 
-    context.resume().catch(() => {});
+    if (context.state === "suspended") {
+        context.resume().catch(() => {});
+    }
+
+    unlockAudioContext(context);
 
 }
 
@@ -68,6 +76,21 @@ function playTone(frequency) {
 
     oscillator.start(startTime);
     oscillator.stop(startTime + 0.2);
+
+}
+
+function unlockAudioContext(context) {
+
+    const oscillator = context.createOscillator();
+    const gain = context.createGain();
+
+    gain.gain.value = 0;
+
+    oscillator.connect(gain);
+    gain.connect(context.destination);
+
+    oscillator.start();
+    oscillator.stop(context.currentTime + 0.01);
 
 }
 

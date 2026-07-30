@@ -90,6 +90,11 @@ Nach jeder abgeschlossenen Änderung:
 1. Browser testen
 2. Safari testen
 3. iPhone PWA testen
+    - Wake Lock
+    - Audio
+    - PWA-Installation
+    - Hintergrundverhalten
+    - Timer
 4. Erst danach Commit
 
 ---
