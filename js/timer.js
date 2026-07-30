@@ -1,34 +1,48 @@
-let interval = null;
+let timeout = null;
 
 let remainingSeconds = 0;
+
+let endTime = null;
 
 export function startTimer(seconds, onTick, onFinished) {
 
     stopTimer();
 
-    remainingSeconds = seconds;
+    endTime = Date.now() + (seconds * 1000);
+
+    updateTimer(onTick, onFinished);
+
+}
+
+function updateTimer(onTick, onFinished) {
+
+    remainingSeconds = Math.max(
+
+        0,
+
+        Math.ceil((endTime - Date.now()) / 1000)
+
+    );
 
     if (onTick) {
         onTick(remainingSeconds);
     }
 
-    interval = setInterval(() => {
+    if (remainingSeconds === 0) {
 
-        remainingSeconds--;
+        stopTimer();
 
-        if (onTick) {
-            onTick(remainingSeconds);
+        if (onFinished) {
+            onFinished();
         }
 
-        if (remainingSeconds <= 0) {
+        return;
 
-            stopTimer();
+    }
 
-            if (onFinished) {
-                onFinished();
-            }
+    timeout = setTimeout(() => {
 
-        }
+        updateTimer(onTick, onFinished);
 
     }, 1000);
 
@@ -36,13 +50,15 @@ export function startTimer(seconds, onTick, onFinished) {
 
 export function stopTimer() {
 
-    if (interval) {
+    if (timeout) {
 
-        clearInterval(interval);
+        clearTimeout(timeout);
 
-        interval = null;
+        timeout = null;
 
     }
+
+    endTime = null;
 
 }
 
@@ -54,6 +70,6 @@ export function getRemainingSeconds() {
 
 export function isTimerRunning() {
 
-    return interval !== null;
+    return timeout !== null;
 
 }

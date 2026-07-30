@@ -24,6 +24,12 @@ import {
     releaseWakeLock
 } from "../wake-lock.js";
 
+import {
+    prepareFeedback,
+    notifyExerciseFinished,
+    notifyRestFinished
+} from "../feedback.js";
+
 const STATUS = {
 
     EXERCISE: "exercise",
@@ -213,6 +219,8 @@ export function trainingSessionView() {
 
                 <h3>${exercise.name}</h3>
 
+                <p>${exercise.description}</p>
+
                 <p>
 
                     Satz ${session.set}
@@ -265,6 +273,8 @@ function handleButtonClick() {
     if (!session) {
         return;
     }
+
+    prepareFeedback();
 
     const workout = WORKOUTS[session.workoutId];
 
@@ -341,6 +351,8 @@ function startExerciseTimer(seconds) {
 
         () => {
 
+            notifyExerciseFinished();
+
             setStatus(STATUS.FINISHED);
 
             showView("trainingSession");
@@ -370,6 +382,8 @@ function startRestTimer(seconds) {
         },
 
         () => {
+
+            notifyRestFinished();
 
             completeRest();
 
