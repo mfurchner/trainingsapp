@@ -1,7 +1,9 @@
+import { VERSION } from "./version.js";
+
 export const APP = {
 
     name: "TrainingsApp",
 
-    version: "1.0.0"
+    version: VERSION
 
 };

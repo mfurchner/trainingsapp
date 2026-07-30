@@ -38,3 +38,8 @@ Ordne Verbesserungsvorschläge nach ihrem erwarteten Umsetzungszeitraum:
 - kurzfristig sinnvoll;
 - mittelfristig sinnvoll;
 - langfristig sinnvoll.
+
+## Versionsnummer
+
+Aktualisiere bei jedem neuen Feature die manuell gepflegte Versionsnummer in
+`js/version.js`.

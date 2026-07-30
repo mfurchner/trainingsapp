@@ -1,3 +1,5 @@
+import { VERSION } from "../version.js";
+
 export function settingsView() {
 
     return `
@@ -9,6 +11,10 @@ export function settingsView() {
 
             <p>
                 Hier kannst du die App konfigurieren.
+            </p>
+
+            <p class="subtitle">
+                Version ${VERSION}
             </p>
 
         </div>
