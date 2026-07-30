@@ -3,6 +3,9 @@ import { WORKOUTS } from "../data/workouts.js";
 import { EXERCISES } from "../data/exercises.js";
 import { startSession } from "../session.js";
 import { showView } from "../router.js";
+import {
+    requestWakeLock
+} from "../wake-lock.js";
 
 export function trainingView() {
 
