@@ -1,7 +1,12 @@
 import { loadTrainingPlan } from "../training-storage.js";
 import { WORKOUTS } from "../data/workouts.js";
 import { EXERCISES } from "../data/exercises.js";
-import { startSession } from "../session.js";
+import {
+    startSession,
+    getStoredSession,
+    restoreSession,
+    clearSession
+} from "../session.js";
 import { showView } from "../router.js";
 import {
     requestWakeLock
@@ -11,10 +16,60 @@ export function trainingView() {
 
     const trainingPlan = loadTrainingPlan();
 
+    let storedSession = getStoredSession();
+
+    let storedWorkout = storedSession
+        ? WORKOUTS[storedSession.workoutId]
+        : null;
+
+    let storedExercise = storedWorkout
+        ? storedWorkout.exercises[storedSession.exerciseIndex]
+        : null;
+
+    let exercise = storedExercise
+        ? EXERCISES[storedExercise.exercise]
+        : null;
+
+    if (
+        storedSession &&
+        (!storedWorkout || !storedExercise || !exercise ||
+            storedSession.set > storedExercise.sets)
+    ) {
+        clearSession();
+
+        storedSession = null;
+        storedWorkout = null;
+        storedExercise = null;
+        exercise = null;
+    }
+
     let html = `
         <div class="page">
             <h2>4-Wochen-Trainingsplan</h2>
     `;
+
+    if (storedSession) {
+
+        html += `
+            <section class="card">
+                <h3>Laufendes Training</h3>
+
+                <p>
+                    <strong>${storedWorkout.name}</strong><br>
+                    ${exercise.name}<br>
+                    Satz ${storedSession.set}
+                    von ${storedExercise.sets}
+                </p>
+
+                <button
+                    class="primary-button"
+                    id="continue-training-button">
+                    Training fortsetzen
+                </button>
+            </section>
+        `;
+
+    }
 
     trainingPlan.forEach(week => {
 
@@ -116,6 +171,26 @@ export function trainingView() {
 }
 
 export async function initTrainingView() {
+
+    const continueButton = document.getElementById(
+        "continue-training-button"
+    );
+
+    if (continueButton) {
+
+        continueButton.addEventListener("click", () => {
+
+            if (!restoreSession()) {
+                showView("training");
+
+                return;
+            }
+
+            showView("trainingSession");
+
+        });
+
+    }
 
     const buttons = document.querySelectorAll(".accordion-toggle");
 

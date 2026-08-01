@@ -7,7 +7,9 @@ import {
     getStatus,
     setStatus,
     nextSet,
-    nextExercise
+    nextExercise,
+    clearSession,
+    finishSession
 } from "../session.js";
 
 import { completeWorkout } from "../training-storage.js";
@@ -244,6 +246,14 @@ export function trainingSessionView() {
 
                 </button>
 
+                <button
+                    class="secondary-button"
+                    id="cancel-training-button">
+
+                    Training abbrechen
+
+                </button>
+
             </div>
 
         </div>
@@ -262,8 +272,35 @@ export function initTrainingSessionView() {
 
     button.addEventListener("click", handleButtonClick);
 
+    const cancelButton = document.getElementById("cancel-training-button");
+
+    if (!cancelButton) {
+        return;
+    }
+
+    cancelButton.addEventListener("click", handleCancelTraining);
+
 }
 
+async function handleCancelTraining() {
+
+    const shouldCancel = window.confirm(
+        "Möchtest du das Training wirklich abbrechen?"
+    );
+
+    if (!shouldCancel) {
+        return;
+    }
+
+    stopTimer();
+
+    clearSession();
+
+    await releaseWakeLock();
+
+    showView("training");
+
+}
 
 
 function handleButtonClick() {
@@ -482,6 +519,8 @@ async function finishTraining() {
         session.day
 
     );
+
+    finishSession();
 
     releaseWakeLock();
 

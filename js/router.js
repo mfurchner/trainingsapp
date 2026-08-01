@@ -4,6 +4,7 @@ import { initTrainingView } from "./views/training.js";
 import { initTrainingSessionView } from "./views/training-session.js";
 import { initTrainingFinishedView } from "./views/training-finished.js";
 import { initTimerView } from "./views/timer.js";
+import { initSettingsView } from "./views/settings.js";
 
 export function initRouter() {
 
@@ -85,5 +86,9 @@ export function showView(viewId) {
 
     if (viewId === "timer") {
         initTimerView();
+    }
+
+    if (viewId === "settings") {
+        initSettingsView();
     }
 }
