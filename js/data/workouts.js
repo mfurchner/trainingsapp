@@ -3,31 +3,31 @@ export const WORKOUTS = {
     A: {
         id: "A",
         name: "Ganzkörper A",
-        description: "Schwerpunkt Beine, Brust und Rücken",
+        description: "Schwerpunkt Beine, Brust und Rücken mit Kurzhanteln",
 
         exercises: [
             {
                 exercise: "squat",
                 sets: 3,
-                reps: 12,
-                rest: 90
+                reps: 20,
+                rest: 60
             },
             {
                 exercise: "pushup",
                 sets: 3,
-                reps: 10,
+                reps: 12,
                 rest: 60
             },
             {
                 exercise: "row",
                 sets: 3,
-                reps: 12,
-                rest: 90
+                reps: 20,
+                rest: 60
             },
             {
                 exercise: "plank",
                 sets: 3,
-                duration: 45,
+                duration: 40,
                 rest: 45
             }
         ]
@@ -36,30 +36,30 @@ export const WORKOUTS = {
     B: {
         id: "B",
         name: "Ganzkörper B",
-        description: "Schwerpunkt Beine, Schultern und Core",
+        description: "Schwerpunkt Beine, Schultern und Core mit Kurzhanteln",
 
         exercises: [
             {
                 exercise: "lunge",
-                sets: 3,
-                reps: 10,
-                rest: 90
+                sets: 4,
+                reps: 12,
+                rest: 60
             },
             {
                 exercise: "shoulderPress",
                 sets: 3,
-                reps: 10,
-                rest: 90
+                reps: 18,
+                rest: 60
             },
             {
-                exercise: "latPulldown",
+                exercise: "lateralRaise",
                 sets: 3,
-                reps: 12,
-                rest: 90
+                reps: 15,
+                rest: 60
             },
             {
                 exercise: "sidePlank",
-                sets: 3,
+                sets: 4,
                 duration: 30,
                 rest: 45
             }
@@ -69,38 +69,32 @@ export const WORKOUTS = {
     C: {
         id: "C",
         name: "Ganzkörper C",
-        description: "Schwerpunkt Ganzkörper und Stabilität",
+        description: "Schwerpunkt Gesäß, Oberkörper und Stabilität",
 
         exercises: [
             {
                 exercise: "gluteBridge",
                 sets: 3,
-                reps: 15,
+                reps: 25,
                 rest: 60
             },
             {
                 exercise: "inclinePushup",
                 sets: 3,
-                reps: 12,
+                reps: 15,
                 rest: 60
             },
             {
-                exercise: "birdDog",
+                exercise: "row",
                 sets: 3,
+                reps: 20,
+                rest: 60
+            },
+            {
+                exercise: "deadBug",
+                sets: 4,
                 reps: 12,
                 rest: 45
-            },
-            {
-                exercise: "dumbbellCurl",
-                sets: 3,
-                reps: 12,
-                rest: 60
-            },
-            {
-                exercise: "tricepsDip",
-                sets: 3,
-                reps: 12,
-                rest: 60
             }
         ]
     }
