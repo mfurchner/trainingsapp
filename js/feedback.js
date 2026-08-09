@@ -43,6 +43,28 @@ export function notifyRestFinished() {
 
 }
 
+export function playSignalTonePreview() {
+
+    const context = getAudioContext();
+
+    if (!context || context.state === "closed") {
+        return;
+    }
+
+    if (context.state !== "running") {
+
+        context.resume()
+            .then(() => playTone(880))
+            .catch(() => {});
+
+        return;
+
+    }
+
+    playTone(880);
+
+}
+
 function getAudioContext() {
 
     if (audioContext) {

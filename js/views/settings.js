@@ -5,6 +5,7 @@ import { clearSession } from "../session.js";
 import { showView } from "../router.js";
 import { stopTimer } from "../timer.js";
 import { releaseWakeLock } from "../wake-lock.js";
+import { playSignalTonePreview } from "../feedback.js";
 import {
     getSignalToneVolume,
     setSignalToneVolume
@@ -92,6 +93,12 @@ export function initSettingsView() {
             setSignalToneVolume(volume);
 
             signalToneVolumeValue.textContent = `${volume} %`;
+
+        });
+
+        signalToneVolume.addEventListener("change", () => {
+
+            playSignalTonePreview();
 
         });
 
