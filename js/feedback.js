@@ -1,3 +1,10 @@
+import {
+    DEFAULT_SIGNAL_TONE_VOLUME,
+    getSignalToneVolume
+} from "./settings-storage.js";
+
+const DEFAULT_TONE_GAIN = 0.12;
+
 let audioContext = null;
 
 export function prepareFeedback() {
@@ -58,18 +65,24 @@ function getAudioContext() {
 function playTone(frequency) {
 
     const context = getAudioContext();
+    const volume = getSignalToneVolume();
 
-    if (!context || context.state !== "running") {
+    if (!context || context.state !== "running" || volume === 0) {
         return;
     }
 
     const oscillator = context.createOscillator();
     const gain = context.createGain();
     const startTime = context.currentTime;
+    const toneGain =
+        DEFAULT_TONE_GAIN * volume / DEFAULT_SIGNAL_TONE_VOLUME;
 
     oscillator.frequency.value = frequency;
-    gain.gain.setValueAtTime(0.12, startTime);
-    gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.2);
+    gain.gain.setValueAtTime(toneGain, startTime);
+    gain.gain.exponentialRampToValueAtTime(
+        toneGain * 0.01 / DEFAULT_TONE_GAIN,
+        startTime + 0.2
+    );
 
     oscillator.connect(gain);
     gain.connect(context.destination);

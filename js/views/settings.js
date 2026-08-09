@@ -5,8 +5,14 @@ import { clearSession } from "../session.js";
 import { showView } from "../router.js";
 import { stopTimer } from "../timer.js";
 import { releaseWakeLock } from "../wake-lock.js";
+import {
+    getSignalToneVolume,
+    setSignalToneVolume
+} from "../settings-storage.js";
 
 export function settingsView() {
+
+    const signalToneVolume = getSignalToneVolume();
 
     return `
         <div class="card">
@@ -18,6 +24,23 @@ export function settingsView() {
             <p>
                 Hier kannst du die App konfigurieren.
             </p>
+
+            <div class="title">
+                Signalton
+            </div>
+
+            <label for="signal-tone-volume">
+                Lautstärke: <span id="signal-tone-volume-value">
+                    ${signalToneVolume} %
+                </span>
+            </label>
+
+            <input
+                type="range"
+                id="signal-tone-volume"
+                min="0"
+                max="100"
+                value="${signalToneVolume}">
 
             <div class="title">
                 Daten
@@ -51,6 +74,28 @@ export function settingsView() {
 }
 
 export function initSettingsView() {
+
+    const signalToneVolume = document.getElementById(
+        "signal-tone-volume"
+    );
+
+    const signalToneVolumeValue = document.getElementById(
+        "signal-tone-volume-value"
+    );
+
+    if (signalToneVolume && signalToneVolumeValue) {
+
+        signalToneVolume.addEventListener("input", () => {
+
+            const volume = signalToneVolume.value;
+
+            setSignalToneVolume(volume);
+
+            signalToneVolumeValue.textContent = `${volume} %`;
+
+        });
+
+    }
 
     const progressButton = document.getElementById(
         "reset-training-progress"
