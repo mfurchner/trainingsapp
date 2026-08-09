@@ -1,14 +1,36 @@
 let wakeLock = null;
 
+let shouldKeepWakeLock = false;
+
 export async function requestWakeLock() {
 
-    if (!("wakeLock" in navigator)) {
+    shouldKeepWakeLock = true;
+
+    if (!("wakeLock" in navigator) || wakeLock) {
         return;
     }
 
     try {
 
-        wakeLock = await navigator.wakeLock.request("screen");
+        const sentinel = await navigator.wakeLock.request("screen");
+
+        if (!shouldKeepWakeLock) {
+
+            await sentinel.release();
+
+            return;
+
+        }
+
+        wakeLock = sentinel;
+
+        wakeLock.addEventListener("release", () => {
+
+            if (wakeLock === sentinel) {
+                wakeLock = null;
+            }
+
+        });
 
     } catch (error) {
 
@@ -20,13 +42,19 @@ export async function requestWakeLock() {
 
 export async function releaseWakeLock() {
 
+    shouldKeepWakeLock = false;
+
     if (!wakeLock) {
         return;
     }
 
+    const activeWakeLock = wakeLock;
+
+    wakeLock = null;
+
     try {
 
-        await wakeLock.release();
+        await activeWakeLock.release();
 
     } catch (error) {
 
@@ -34,6 +62,21 @@ export async function releaseWakeLock() {
 
     }
 
-    wakeLock = null;
+}
+
+if (typeof document !== "undefined") {
+
+    document.addEventListener("visibilitychange", () => {
+
+        if (
+            document.visibilityState !== "visible" ||
+            !shouldKeepWakeLock
+        ) {
+            return;
+        }
+
+        requestWakeLock();
+
+    });
 
 }
