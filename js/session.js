@@ -8,6 +8,18 @@ const VALID_STATUSES = [
     "rest"
 ];
 
+export const PHASE = {
+
+    WARMUP: "warmup",
+
+    WORKOUT: "workout",
+
+    STRETCHING: "stretching"
+
+};
+
+const VALID_PHASES = Object.values(PHASE);
+
 export function startSession(week, day, workoutId) {
 
     session = {
@@ -20,7 +32,11 @@ export function startSession(week, day, workoutId) {
 
         status: "exercise",
 
+        phase: PHASE.WARMUP,
+
         startedAt: new Date(),
+
+        workoutStartedAt: null,
 
         finished: false
     };
@@ -31,6 +47,16 @@ export function startSession(week, day, workoutId) {
 
 export function getSession() {
     return session;
+}
+
+export function getPhase() {
+
+    if (!session) {
+        return null;
+    }
+
+    return session.phase || PHASE.WORKOUT;
+
 }
 
 export function getStoredSession() {
@@ -58,6 +84,10 @@ export function restoreSession() {
     session = {
         ...storedSession,
         startedAt: new Date(storedSession.startedAt),
+        workoutStartedAt: storedSession.workoutStartedAt
+            ? new Date(storedSession.workoutStartedAt)
+            : null,
+        phase: storedSession.phase || PHASE.WORKOUT,
         status: "exercise"
     };
 
@@ -120,6 +150,22 @@ export function nextExercise() {
 
 }
 
+export function startWorkout() {
+
+    setPhase(PHASE.WORKOUT);
+
+    session.workoutStartedAt = new Date();
+
+    saveSession();
+
+}
+
+export function startStretching() {
+
+    setPhase(PHASE.STRETCHING);
+
+}
+
 export function finishSession() {
 
     if (!session) {
@@ -146,6 +192,21 @@ function saveSession() {
         STORAGE_KEY,
         JSON.stringify(session)
     );
+
+}
+
+function setPhase(phase) {
+
+    if (!session) {
+        return;
+    }
+
+    session.phase = phase;
+    session.exerciseIndex = 0;
+    session.set = 1;
+    session.status = "exercise";
+
+    saveSession();
 
 }
 
@@ -177,9 +238,18 @@ function isValidSession(storedSession) {
         Number.isInteger(storedSession.set) &&
         storedSession.set >= 1 &&
         VALID_STATUSES.includes(storedSession.status) &&
+        (!storedSession.phase || VALID_PHASES.includes(storedSession.phase)) &&
         storedSession.finished === false &&
         typeof storedSession.startedAt === "string" &&
-        !Number.isNaN(Date.parse(storedSession.startedAt))
+        !Number.isNaN(Date.parse(storedSession.startedAt)) &&
+        (
+            storedSession.workoutStartedAt === undefined ||
+            storedSession.workoutStartedAt === null ||
+            (
+                typeof storedSession.workoutStartedAt === "string" &&
+                !Number.isNaN(Date.parse(storedSession.workoutStartedAt))
+            )
+        )
     );
 
 }

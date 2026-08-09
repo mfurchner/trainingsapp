@@ -1,7 +1,10 @@
 import { loadTrainingPlan } from "../training-storage.js";
 import { WORKOUTS } from "../data/workouts.js";
 import { EXERCISES } from "../data/exercises.js";
+import { WARMUP } from "../data/warmup.js";
+import { STRETCHING } from "../data/stretching.js";
 import {
+    PHASE,
     startSession,
     getStoredSession,
     restoreSession,
@@ -22,12 +25,16 @@ export function trainingView() {
         ? WORKOUTS[storedSession.workoutId]
         : null;
 
-    let storedExercise = storedWorkout
-        ? storedWorkout.exercises[storedSession.exerciseIndex]
+    let storedExercises = storedSession && storedWorkout
+        ? getSessionExercises(storedSession, storedWorkout)
         : null;
 
-    let exercise = storedExercise
-        ? EXERCISES[storedExercise.exercise]
+    let storedExercise = storedWorkout
+        ? storedExercises[storedSession.exerciseIndex]
+        : null;
+
+    let exercise = storedSession && storedExercise
+        ? getSessionExerciseData(storedSession, storedExercise)
         : null;
 
     if (
@@ -39,6 +46,7 @@ export function trainingView() {
 
         storedSession = null;
         storedWorkout = null;
+        storedExercises = null;
         storedExercise = null;
         exercise = null;
     }
@@ -56,6 +64,7 @@ export function trainingView() {
 
                 <p>
                     <strong>${storedWorkout.name}</strong><br>
+                    ${getSessionPhaseTitle(storedSession)}<br>
                     ${exercise.name}<br>
                     Satz ${storedSession.set}
                     von ${storedExercise.sets}
@@ -168,6 +177,46 @@ export function trainingView() {
     `;
 
     return html;
+}
+
+function getSessionExercises(session, workout) {
+
+    const phase = session.phase || PHASE.WORKOUT;
+
+    if (phase === PHASE.WARMUP) {
+        return WARMUP;
+    }
+
+    if (phase === PHASE.STRETCHING) {
+        return STRETCHING;
+    }
+
+    return workout.exercises;
+
+}
+
+function getSessionExerciseData(session, exercise) {
+
+    if ((session.phase || PHASE.WORKOUT) === PHASE.WORKOUT) {
+        return EXERCISES[exercise.exercise];
+    }
+
+    return exercise;
+
+}
+
+function getSessionPhaseTitle(session) {
+
+    if (session.phase === PHASE.WARMUP) {
+        return "🔥 Aufwärmen";
+    }
+
+    if (session.phase === PHASE.STRETCHING) {
+        return "🧘 Dehnen";
+    }
+
+    return "🏋️ Workout";
+
 }
 
 export async function initTrainingView() {

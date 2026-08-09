@@ -1,13 +1,19 @@
 import { WORKOUTS } from "../data/workouts.js";
 import { EXERCISES } from "../data/exercises.js";
+import { WARMUP } from "../data/warmup.js";
+import { STRETCHING } from "../data/stretching.js";
 import { showView } from "../router.js";
 
 import {
+    PHASE,
     getSession,
+    getPhase,
     getStatus,
     setStatus,
     nextSet,
     nextExercise,
+    startWorkout,
+    startStretching,
     clearSession,
     finishSession
 } from "../session.js";
@@ -63,20 +69,24 @@ export function trainingSessionView() {
 
     const workout = WORKOUTS[session.workoutId];
 
+    const phase = getPhase();
+
+    const phaseExercises = getPhaseExercises(phase, workout);
+
     const currentExercise =
-        workout.exercises[session.exerciseIndex];
+        phaseExercises[session.exerciseIndex];
 
     const exercise =
-        EXERCISES[currentExercise.exercise];
+        getExerciseData(phase, currentExercise);
 
     const totalExercises =
-        workout.exercises.length;
+        phaseExercises.length;
 
     const currentExerciseNumber =
         session.exerciseIndex + 1;
 
     const totalSets =
-        workout.exercises.reduce(
+        phaseExercises.reduce(
 
             (sum, exercise) => sum + exercise.sets,
 
@@ -86,7 +96,7 @@ export function trainingSessionView() {
 
     const completedSets =
 
-        workout.exercises
+        phaseExercises
             .slice(0, session.exerciseIndex)
             .reduce(
 
@@ -114,18 +124,43 @@ export function trainingSessionView() {
     let buttonText = "";
     let buttonDisabled = false;
 
-    let exerciseInfo =
-        currentExercise.reps
-            ? `${currentExercise.reps} Wiederholungen`
-            : `${currentExercise.duration} Sekunden`;
+    let exerciseInfo = getExerciseInfo(currentExercise);
+    let nextExerciseInfo = "";
 
     if (getStatus() === STATUS.REST) {
 
         exerciseInfo = `
-            <div class="timer-display">
-                ${getRemainingSeconds()}
+            <div>
+                <p>Pause</p>
+                <div class="timer-display">
+                    ${getRemainingSeconds()}
+                </div>
             </div>
         `;
+
+        if (
+            session.set === currentExercise.sets &&
+            session.exerciseIndex < phaseExercises.length - 1
+        ) {
+
+            const nextWorkoutExercise =
+                phaseExercises[session.exerciseIndex + 1];
+
+            const nextExerciseData =
+                getExerciseData(phase, nextWorkoutExercise);
+
+            nextExerciseInfo = `
+                <div>
+                    <p>Nächste Übung</p>
+                    <h3>${nextExerciseData.name}</h3>
+                    <p>
+                        ${nextWorkoutExercise.sets} Sätze ×
+                        ${getExerciseInfo(nextWorkoutExercise)}
+                    </p>
+                </div>
+            `;
+
+        }
 
         buttonText = "▶ Weiter trainieren";
         buttonDisabled = false;
@@ -178,16 +213,28 @@ export function trainingSessionView() {
 
         } else if (
             session.exerciseIndex <
-            workout.exercises.length - 1
+            phaseExercises.length - 1
         ) {
 
-            buttonText =
-                "Satz abgeschlossen → Weiter zur nächsten Übung";
+            buttonText = currentExercise.rest
+                ? "Satz abgeschlossen → Pause"
+                : "Satz abgeschlossen → Weiter zur nächsten Übung";
 
         } else {
 
-            buttonText =
-                "Training abschließen 🎉";
+            if (phase === PHASE.WARMUP) {
+
+                buttonText = "Aufwärmen abschließen";
+
+            } else if (phase === PHASE.WORKOUT) {
+
+                buttonText = "Workout abschließen → Dehnen";
+
+            } else {
+
+                buttonText = "Training abschließen 🎉";
+
+            }
 
         }
 
@@ -201,7 +248,9 @@ export function trainingSessionView() {
 
             <div class="card">
 
-                <h2>${workout.name}</h2>
+                <h2 class="${phase === PHASE.WORKOUT ? "" : "training-phase"}">
+                    ${phase === PHASE.WORKOUT ? workout.name : getPhaseTitle(phase)}
+                </h2>
 
                 <div class="progress-container">
 
@@ -236,6 +285,8 @@ export function trainingSessionView() {
 
                 </div>
 
+                ${nextExerciseInfo}
+
 
                 <button
                     class="primary-button"
@@ -245,6 +296,14 @@ export function trainingSessionView() {
                     ${buttonText}
 
                 </button>
+
+                ${phase === PHASE.WORKOUT ? "" : `
+                    <button
+                        class="secondary-button"
+                        id="skip-phase-button">
+                        Überspringen
+                    </button>
+                `}
 
                 <button
                     class="secondary-button"
@@ -279,6 +338,36 @@ export function initTrainingSessionView() {
     }
 
     cancelButton.addEventListener("click", handleCancelTraining);
+
+    const skipButton = document.getElementById("skip-phase-button");
+
+    if (skipButton) {
+
+        skipButton.addEventListener("click", handleSkipPhase);
+
+    }
+
+}
+
+function handleSkipPhase() {
+
+    stopTimer();
+
+    if (getPhase() === PHASE.WARMUP) {
+
+        startWorkout();
+
+        showView("trainingSession");
+
+        return;
+
+    }
+
+    if (getPhase() === PHASE.STRETCHING) {
+
+        finishTraining();
+
+    }
 
 }
 
@@ -315,8 +404,10 @@ function handleButtonClick() {
 
     const workout = WORKOUTS[session.workoutId];
 
+    const phase = getPhase();
+
     const currentExercise =
-        workout.exercises[session.exerciseIndex];
+        getPhaseExercises(phase, workout)[session.exerciseIndex];
 
 
         if (getStatus() === STATUS.REST) {
@@ -442,8 +533,10 @@ function completeCurrentSet() {
 
     const workout = WORKOUTS[session.workoutId];
 
+    const phase = getPhase();
+
     const currentExercise =
-        workout.exercises[session.exerciseIndex];
+        getPhaseExercises(phase, workout)[session.exerciseIndex];
 
 
 
@@ -467,8 +560,16 @@ function completeCurrentSet() {
 
     if (
         session.exerciseIndex <
-        workout.exercises.length - 1
+        getPhaseExercises(phase, workout).length - 1
     ) {
+
+        if (currentExercise.rest) {
+
+            startRestTimer(currentExercise.rest);
+
+            return;
+
+        }
 
         nextExercise();
 
@@ -478,19 +579,38 @@ function completeCurrentSet() {
 
     }
 
+    if (phase === PHASE.WARMUP) {
+
+        startWorkout();
+
+        showView("trainingSession");
+
+        return;
+
+    }
+
+    if (phase === PHASE.WORKOUT) {
+
+        finishWorkout();
+
+        return;
+
+    }
+
     finishTraining();
 
 }
 
-
-
-async function finishTraining() {
+function finishWorkout() {
 
     const session = getSession();
 
     const duration = Math.floor(
 
-        (Date.now() - session.startedAt.getTime()) / 1000
+        (
+            Date.now() -
+            (session.workoutStartedAt || session.startedAt).getTime()
+        ) / 1000
 
     );
 
@@ -503,7 +623,7 @@ async function finishTraining() {
         week: session.week,
         day: session.day,
 
-        startedAt: session.startedAt,
+        startedAt: session.workoutStartedAt || session.startedAt,
 
         finishedAt: new Date(),
 
@@ -520,6 +640,14 @@ async function finishTraining() {
 
     );
 
+    startStretching();
+
+    showView("trainingSession");
+
+}
+
+function finishTraining() {
+
     finishSession();
 
     releaseWakeLock();
@@ -532,10 +660,74 @@ function completeRest() {
 
     stopTimer();
 
-    nextSet();
+    const session = getSession();
+
+    const workout = WORKOUTS[session.workoutId];
+
+    const phase = getPhase();
+
+    const currentExercise =
+        getPhaseExercises(phase, workout)[session.exerciseIndex];
+
+    if (
+        session.set === currentExercise.sets &&
+        session.exerciseIndex < getPhaseExercises(phase, workout).length - 1
+    ) {
+
+        nextExercise();
+
+    } else {
+
+        nextSet();
+
+    }
 
     setStatus(STATUS.EXERCISE);
 
     showView("trainingSession");
+
+}
+
+function getExerciseInfo(exercise) {
+
+    if (exercise.reps) {
+        return `${exercise.reps} Wiederholungen`;
+    }
+
+    return `${exercise.duration} Sekunden`;
+
+}
+
+function getPhaseExercises(phase, workout) {
+
+    if (phase === PHASE.WARMUP) {
+        return WARMUP;
+    }
+
+    if (phase === PHASE.STRETCHING) {
+        return STRETCHING;
+    }
+
+    return workout.exercises;
+
+}
+
+function getExerciseData(phase, exercise) {
+
+    if (phase === PHASE.WORKOUT) {
+        return EXERCISES[exercise.exercise];
+    }
+
+    return exercise;
+
+}
+
+function getPhaseTitle(phase) {
+
+    if (phase === PHASE.WARMUP) {
+        return "🔥 Aufwärmen";
+    }
+
+    return "🧘 Dehnen";
 
 }

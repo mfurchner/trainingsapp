@@ -30,6 +30,20 @@
 
 }
 
+.training-phase {
+
+    color: var(--color-primary);
+
+    background: var(--color-background);
+
+    border-radius: var(--radius-small);
+
+    padding: var(--space-sm);
+
+    text-align: center;
+
+}
+
 .tab-button{
 
     flex:1;
