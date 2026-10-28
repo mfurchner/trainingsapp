@@ -1,8 +1,8 @@
-import { loadTrainingPlan } from "../training-storage.js";
-import { WORKOUTS } from "../data/workouts.js";
-import { EXERCISES } from "../data/exercises.js";
-import { WARMUP } from "../data/warmup.js";
-import { STRETCHING } from "../data/stretching.js";
+import {
+    getActivePlanDefinition,
+    loadTrainingPlan
+} from "../training-storage.js";
+import { DEFAULT_PLAN_ID, getPlan } from "../data/plans.js";
 import {
     PHASE,
     startSession,
@@ -17,16 +17,22 @@ import {
 
 export function trainingView() {
 
-    const trainingPlan = loadTrainingPlan();
+    const activePlan = getActivePlanDefinition();
+
+    const trainingPlan = loadTrainingPlan(activePlan.id);
 
     let storedSession = getStoredSession();
 
-    let storedWorkout = storedSession
-        ? WORKOUTS[storedSession.workoutId]
+    const storedPlan = storedSession
+        ? getPlan(storedSession.planId || DEFAULT_PLAN_ID)
+        : null;
+
+    let storedWorkout = storedPlan
+        ? storedPlan.workouts[storedSession.workoutId]
         : null;
 
     let storedExercises = storedSession && storedWorkout
-        ? getSessionExercises(storedSession, storedWorkout)
+        ? getSessionExercises(storedSession, storedPlan, storedWorkout)
         : null;
 
     let storedExercise = storedWorkout
@@ -34,7 +40,7 @@ export function trainingView() {
         : null;
 
     let exercise = storedSession && storedExercise
-        ? getSessionExerciseData(storedSession, storedExercise)
+        ? getSessionExerciseData(storedSession, storedPlan, storedExercise)
         : null;
 
     if (
@@ -53,7 +59,8 @@ export function trainingView() {
 
     let html = `
         <div class="page">
-            <h2>4-Wochen-Trainingsplan</h2>
+            <h2>${activePlan.name}</h2>
+            <p>${activePlan.description}</p>
     `;
 
     if (storedSession) {
@@ -101,7 +108,7 @@ export function trainingView() {
                 return;
             }
 
-            const workout = WORKOUTS[day.workout];
+            const workout = activePlan.workouts[day.workout];
 
             html += `
                 <div class="training-day">
@@ -137,7 +144,7 @@ export function trainingView() {
 
             workout.exercises.forEach(item => {
 
-                const exercise = EXERCISES[item.exercise];
+                const exercise = activePlan.exercises[item.exercise];
 
                 html += `
                     <li>
@@ -155,7 +162,8 @@ export function trainingView() {
                     class="primary-button start-workout"
                     data-week="${week.week}"
                     data-day="${day.day}"
-                    data-workout="${day.workout}">
+                    data-workout="${day.workout}"
+                    data-plan="${activePlan.id}">
                     Training starten
                 </button>
 
@@ -179,26 +187,26 @@ export function trainingView() {
     return html;
 }
 
-function getSessionExercises(session, workout) {
+function getSessionExercises(session, plan, workout) {
 
     const phase = session.phase || PHASE.WORKOUT;
 
     if (phase === PHASE.WARMUP) {
-        return WARMUP;
+        return plan.warmup;
     }
 
     if (phase === PHASE.STRETCHING) {
-        return STRETCHING;
+        return plan.stretching;
     }
 
     return workout.exercises;
 
 }
 
-function getSessionExerciseData(session, exercise) {
+function getSessionExerciseData(session, plan, exercise) {
 
     if ((session.phase || PHASE.WORKOUT) === PHASE.WORKOUT) {
-        return EXERCISES[exercise.exercise];
+        return plan.exercises[exercise.exercise];
     }
 
     return exercise;
@@ -281,7 +289,8 @@ export async function initTrainingView() {
         startSession(
             Number(button.dataset.week),
             Number(button.dataset.day),
-            button.dataset.workout
+            button.dataset.workout,
+            button.dataset.plan
         );
 
         requestWakeLock();

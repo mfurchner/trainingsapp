@@ -3,7 +3,8 @@ import { setHeader } from "./ui.js";
 import { initTrainingView } from "./views/training.js";
 import { initTrainingSessionView } from "./views/training-session.js";
 import { initTrainingFinishedView } from "./views/training-finished.js";
-import { initTimerView } from "./views/timer.js";
+import { initPlanSelectionView } from "./views/plan-selection.js";
+import { initTrainingPlansView } from "./views/training-plans.js";
 import { initSettingsView } from "./views/settings.js";
 
 export function initRouter() {
@@ -55,7 +56,8 @@ export function showView(viewId) {
 
     if (
         viewId === "trainingSession" ||
-        viewId === "trainingFinished"
+        viewId === "trainingFinished" ||
+        viewId === "planSelection"
     ) {
 
         header.style.display = "none";
@@ -80,12 +82,16 @@ export function showView(viewId) {
         initTrainingView();
     }
 
+    if (viewId === "trainingPlans") {
+        initTrainingPlansView();
+    }
+
     if (viewId === "trainingFinished") {
         initTrainingFinishedView();
     }
 
-    if (viewId === "timer") {
-        initTimerView();
+    if (viewId === "planSelection") {
+        initPlanSelectionView();
     }
 
     if (viewId === "settings") {

@@ -1,9 +1,14 @@
 import { getSession, clearSession } from "../session.js";
 import { showView } from "../router.js";
+import { isPlanCompleted } from "../training-storage.js";
+import { DEFAULT_PLAN_ID } from "../data/plans.js";
 
 export function trainingFinishedView() {
 
     const session = getSession();
+    const planCompleted = isPlanCompleted(
+        session?.planId || DEFAULT_PLAN_ID
+    );
 
     let duration = "--:--";
 
@@ -37,11 +42,25 @@ export function trainingFinishedView() {
                     <strong>${duration}</strong>
                 </p>
 
-                <button
-                    class="primary-button"
-                    id="back-to-training">
-                    Zurück zum Trainingsplan
-                </button>
+                ${planCompleted ? `
+                    <p>
+                        Dein Trainingsplan ist abgeschlossen.
+                    </p>
+
+                    <button
+                        class="primary-button"
+                        id="select-next-plan">
+                        Nächsten Trainingsplan wählen
+                    </button>
+                ` : ""}
+
+                ${planCompleted ? "" : `
+                    <button
+                        class="primary-button"
+                        id="back-to-training">
+                        Zurück zum Trainingsplan
+                    </button>
+                `}
 
             </div>
 
@@ -51,6 +70,18 @@ export function trainingFinishedView() {
 }
 
 export function initTrainingFinishedView() {
+
+    const selectPlanButton = document.getElementById("select-next-plan");
+
+    if (selectPlanButton) {
+
+        selectPlanButton.addEventListener("click", () => {
+
+            showView("planSelection");
+
+        });
+
+    }
 
     const button = document.getElementById("back-to-training");
 

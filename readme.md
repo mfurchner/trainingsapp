@@ -39,10 +39,13 @@ js/
     navigation.js
     router.js
     storage.js
+    settings-storage.js
     ui.js
     session.js
     timer.js
     wake-lock.js
+    feedback.js
+    version.js
 
     training-storage.js
     history-storage.js
@@ -51,14 +54,24 @@ js/
         exercises.js
         workouts.js
         training-plan.js
+        warmup.js
+        stretching.js
+        plans.js
+
+        arm-focus-exercises.js
+        arm-focus-workouts.js
+        arm-focus-training-plan.js
+        arm-focus-warmup.js
+        arm-focus-stretching.js
 
     views/
         dashboard.js
         training.js
+        training-plans.js
         training-session.js
         training-finished.js
+        plan-selection.js
         statistics.js
-        timer.js
         settings.js
 ```
 
@@ -86,7 +99,11 @@ Training starten
 
 ↓
 
-Übung
+Aufwärmen
+
+↓
+
+Workout
 
 ↓
 
@@ -103,6 +120,10 @@ Nächster Satz
 ↓
 
 Nächste Übung
+
+↓
+
+Dehnen
 
 ↓
 
@@ -135,6 +156,33 @@ Pause
 Nächster Satz
 ```
 
+Nach dem letzten Satz einer Übung läuft – sofern eine weitere Übung folgt –
+die Pausenzeit der abgeschlossenen Übung. Während dieser Pause wird die
+nächste Übung angezeigt.
+
+Aufwärmen und Dehnen gehören zur Trainingseinheit, zählen jedoch nicht zum
+Workout-Fortschritt und erzeugen keine zusätzlichen Historieneinträge.
+
+---
+
+# Trainingspläne
+
+Die App verwaltet mehrere Trainingspläne. Der aktive Plan wird lokal
+gespeichert und im Tab **Trainingsplan** angezeigt.
+
+Aktuell verfügbare Pläne:
+
+- 4-Wochen-Ganzkörperplan
+- 4-Wochen-Armfokus mit Matte und zwei Kurzhanteln à 2,5 kg
+
+Jeder Plan besitzt eigene Workout-, Übungs-, Aufwärm- und Dehndaten. Nach dem
+vollständigen Abschluss eines Plans erscheint eine Auswahl für den nächsten
+Durchlauf. Bereits vorhandene Pläne bleiben auswählbar; ihr Fortschritt wird
+pro Plan getrennt gespeichert.
+
+Während einer laufenden Trainingseinheit kann der aktive Plan nicht geändert
+werden.
+
 ---
 
 # Trainingsstatus
@@ -154,8 +202,10 @@ Diese Zustände steuern die gesamte Trainingslogik.
 
 Die App speichert lokal:
 
-- Trainingsplan
+- ausgewählten Trainingsplan
+- Trainingsfortschritt je Trainingsplan
 - Trainingshistorie
+- laufende Session
 - Einstellungen
 
 Es werden keine Cloud-Dienste verwendet.
@@ -189,20 +239,24 @@ Nach jedem Sprint:
 ## Fertig
 
 - Trainingsplan
+- Mehrere Trainingspläne mit separatem Fortschritt
+- Plan-Auswahl nach vollständigem Planabschluss
+- Tab für aktuellen Trainingsplan und Planwechsel
 - Dashboard
 - Satzverwaltung
 - Zeitübungen
 - Rest Timer
+- Pause zwischen Übungen mit Vorschau der nächsten Übung
+- Aufwärmen und Dehnen als Trainingsphasen
 - Weiter trainieren
+- Trainingsabbruch
 - Trainingsabschluss
 - Wake Lock
+- Audio- und Vibrationsfeedback
+- einstellbare Signalton-Lautstärke mit Vorschau
 
 ## Geplant
 
-- Audio-Feedback
-- Vibration
-- Trainingsabbruch
 - Erweiterte Statistiken
-- Einstellungen
 - Import / Export
 - Offline-Optimierungen

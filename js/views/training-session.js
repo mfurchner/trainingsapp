@@ -1,7 +1,4 @@
-import { WORKOUTS } from "../data/workouts.js";
-import { EXERCISES } from "../data/exercises.js";
-import { WARMUP } from "../data/warmup.js";
-import { STRETCHING } from "../data/stretching.js";
+import { DEFAULT_PLAN_ID, getPlan } from "../data/plans.js";
 import { showView } from "../router.js";
 
 import {
@@ -67,17 +64,19 @@ export function trainingSessionView() {
 
     }
 
-    const workout = WORKOUTS[session.workoutId];
+    const plan = getPlan(session.planId || DEFAULT_PLAN_ID);
+
+    const workout = plan.workouts[session.workoutId];
 
     const phase = getPhase();
 
-    const phaseExercises = getPhaseExercises(phase, workout);
+    const phaseExercises = getPhaseExercises(phase, plan, workout);
 
     const currentExercise =
         phaseExercises[session.exerciseIndex];
 
     const exercise =
-        getExerciseData(phase, currentExercise);
+        getExerciseData(phase, plan, currentExercise);
 
     const totalExercises =
         phaseExercises.length;
@@ -147,7 +146,7 @@ export function trainingSessionView() {
                 phaseExercises[session.exerciseIndex + 1];
 
             const nextExerciseData =
-                getExerciseData(phase, nextWorkoutExercise);
+                getExerciseData(phase, plan, nextWorkoutExercise);
 
             nextExerciseInfo = `
                 <div>
@@ -402,12 +401,14 @@ function handleButtonClick() {
 
     prepareFeedback();
 
-    const workout = WORKOUTS[session.workoutId];
+    const plan = getPlan(session.planId || DEFAULT_PLAN_ID);
+
+    const workout = plan.workouts[session.workoutId];
 
     const phase = getPhase();
 
     const currentExercise =
-        getPhaseExercises(phase, workout)[session.exerciseIndex];
+        getPhaseExercises(phase, plan, workout)[session.exerciseIndex];
 
 
         if (getStatus() === STATUS.REST) {
@@ -531,12 +532,14 @@ function completeCurrentSet() {
 
     const session = getSession();
 
-    const workout = WORKOUTS[session.workoutId];
+    const plan = getPlan(session.planId || DEFAULT_PLAN_ID);
+
+    const workout = plan.workouts[session.workoutId];
 
     const phase = getPhase();
 
     const currentExercise =
-        getPhaseExercises(phase, workout)[session.exerciseIndex];
+        getPhaseExercises(phase, plan, workout)[session.exerciseIndex];
 
 
 
@@ -560,7 +563,7 @@ function completeCurrentSet() {
 
     if (
         session.exerciseIndex <
-        getPhaseExercises(phase, workout).length - 1
+        getPhaseExercises(phase, plan, workout).length - 1
     ) {
 
         if (currentExercise.rest) {
@@ -618,6 +621,7 @@ function finishWorkout() {
 
     addHistoryEntry({
 
+        planId: session.planId || DEFAULT_PLAN_ID,
         workoutId: session.workoutId,
 
         week: session.week,
@@ -635,6 +639,7 @@ function finishWorkout() {
 
     completeWorkout(
 
+        session.planId || DEFAULT_PLAN_ID,
         session.week,
         session.day
 
@@ -662,16 +667,18 @@ function completeRest() {
 
     const session = getSession();
 
-    const workout = WORKOUTS[session.workoutId];
+    const plan = getPlan(session.planId || DEFAULT_PLAN_ID);
+
+    const workout = plan.workouts[session.workoutId];
 
     const phase = getPhase();
 
     const currentExercise =
-        getPhaseExercises(phase, workout)[session.exerciseIndex];
+        getPhaseExercises(phase, plan, workout)[session.exerciseIndex];
 
     if (
         session.set === currentExercise.sets &&
-        session.exerciseIndex < getPhaseExercises(phase, workout).length - 1
+        session.exerciseIndex < getPhaseExercises(phase, plan, workout).length - 1
     ) {
 
         nextExercise();
@@ -698,24 +705,24 @@ function getExerciseInfo(exercise) {
 
 }
 
-function getPhaseExercises(phase, workout) {
+function getPhaseExercises(phase, plan, workout) {
 
     if (phase === PHASE.WARMUP) {
-        return WARMUP;
+        return plan.warmup;
     }
 
     if (phase === PHASE.STRETCHING) {
-        return STRETCHING;
+        return plan.stretching;
     }
 
     return workout.exercises;
 
 }
 
-function getExerciseData(phase, exercise) {
+function getExerciseData(phase, plan, exercise) {
 
     if (phase === PHASE.WORKOUT) {
-        return EXERCISES[exercise.exercise];
+        return plan.exercises[exercise.exercise];
     }
 
     return exercise;

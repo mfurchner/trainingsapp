@@ -1,3 +1,5 @@
+import { DEFAULT_PLAN_ID, getPlan } from "./data/plans.js";
+
 let session = null;
 
 const STORAGE_KEY = "training-session";
@@ -20,12 +22,13 @@ export const PHASE = {
 
 const VALID_PHASES = Object.values(PHASE);
 
-export function startSession(week, day, workoutId) {
+export function startSession(week, day, workoutId, planId = DEFAULT_PLAN_ID) {
 
     session = {
         week,
         day,
         workoutId,
+        planId,
 
         exerciseIndex: 0,
         set: 1,
@@ -87,6 +90,7 @@ export function restoreSession() {
         workoutStartedAt: storedSession.workoutStartedAt
             ? new Date(storedSession.workoutStartedAt)
             : null,
+        planId: storedSession.planId || DEFAULT_PLAN_ID,
         phase: storedSession.phase || PHASE.WORKOUT,
         status: "exercise"
     };
@@ -233,6 +237,7 @@ function isValidSession(storedSession) {
         Number.isInteger(storedSession.week) &&
         Number.isInteger(storedSession.day) &&
         typeof storedSession.workoutId === "string" &&
+        (!storedSession.planId || getPlan(storedSession.planId)) &&
         Number.isInteger(storedSession.exerciseIndex) &&
         storedSession.exerciseIndex >= 0 &&
         Number.isInteger(storedSession.set) &&

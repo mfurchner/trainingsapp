@@ -1,10 +1,11 @@
 import { dashboardView } from "./views/dashboard.js";
 import { trainingView } from "./views/training.js";
-import { timerView } from "./views/timer.js";
 import { statisticsView } from "./views/statistics.js";
 import { settingsView } from "./views/settings.js";
 import { trainingSessionView } from "./views/training-session.js";
 import { trainingFinishedView } from "./views/training-finished.js";
+import { planSelectionView } from "./views/plan-selection.js";
+import { trainingPlansView } from "./views/training-plans.js";
 
 export const NAVIGATION = {
 
@@ -24,6 +25,14 @@ export const NAVIGATION = {
         render: trainingView
     },
 
+    trainingPlans: {
+        id: "trainingPlans",
+        title: "Trainingsplan",
+        icon: "🗂️",
+        showInTabbar: true,
+        render: trainingPlansView
+    },
+
     trainingSession: {
         id: "trainingSession",
         title: "Training",
@@ -40,12 +49,12 @@ export const NAVIGATION = {
         render: trainingFinishedView
     },
 
-    timer: {
-        id: "timer",
-        title: "Timer",
-        icon: "⏱️",
-        showInTabbar: true,
-        render: timerView
+    planSelection: {
+        id: "planSelection",
+        title: "Trainingsplan wählen",
+        icon: "🏋️",
+        showInTabbar: false,
+        render: planSelectionView
     },
 
     statistics: {
